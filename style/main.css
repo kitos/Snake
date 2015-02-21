@@ -1,15 +1,26 @@
 
 table {
-    border: 1px solid black;
-    border-left: 0;
-    border-top: 0;
     margin: 20px auto;
+    border: 1px solid black;
+    border-collapse: separate;
 }
 
 td {
     width: 15px;
     height: 15px;
-    border: 1px solid black;
-    border-right: 0;
-    border-bottom: 0;
+    border: 1px solid #fff;
+}
+
+.snake {
+    border-radius: 4px;
+    border: 1px solid #005000;
+    background-color: #008000;
+}
+
+.free {
+    background-color: #fff;
+}
+
+.frog {
+    background-color: #ffff00;
 }

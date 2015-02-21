@@ -1,11 +1,11 @@
 (function ($) {
     'use strict';
 
-    var colors = {
-        free: 'white',
-        snake: 'green',
-        frog: 'yellow'
-    }
+    var classes = {
+        free: 'free',
+        snake: 'snake',
+        frog: 'frog'
+    };
 
     var pg = window.Playground = Playground;
 
@@ -22,9 +22,8 @@
 
         model.addListener(function (cell) {
             $table.find('tr:eq(' + cell.y + ') td:eq(' + cell.x + ')')
-                .css({
-                    'background-color': colors[cell.state]
-                });
+                .removeClass(Object.keys(classes).join(' '))
+                .addClass(classes[cell.state]);
         })
     }
 
