@@ -20,10 +20,11 @@
             }
         }
 
-        model.addListener(function (cell) {
-            $table.find('tr:eq(' + cell.y + ') td:eq(' + cell.x + ')')
+        model.addListener(function (coord) {
+            var cell = model.getCell(coord)
+            $table.find('tr:eq(' + coord.y + ') td:eq(' + coord.x + ')')
                 .removeClass(Object.keys(classes).join(' '))
-                .addClass(classes[cell.state]);
+                .addClass(classes[cell.getState()]);
         })
     }
 

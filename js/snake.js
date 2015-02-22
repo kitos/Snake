@@ -19,35 +19,31 @@
     Snake.prototype = {
 
         init: function (length) {
+            var firstCell = {x: 0, y: 0},
+                direction = Snake.direction.RIGHT,
+                nextCell = this.pg.getCell(firstCell);
+
             this.cells = [];
-            for (var i = 0; i < length; i++) {
-                this.cells.push({x: i, y: 0});
+            while (length-- > 0) {
+                this.cells.push(nextCell);
+                nextCell.setState(PlaygroundModel.states.SNAKE);
+                nextCell = nextCell[direction]();
             }
         },
 
         move: function () {
-            var prevTail = this.cells.shift(),
-                oldHead = this.cells[this.cells.length - 1],
-                newHead;
+            var cells = this.cells,
+                exTail = cells.shift(),
+                oldHead = cells[cells.length - 1],
+                newHead = oldHead[this.direction]();
 
-            switch (this.direction) {
-                case 'left':
-                    newHead = {x: oldHead.x - 1, y: oldHead.y};
-                    break;
-                case 'top':
-                    newHead = {x: oldHead.x, y: oldHead.y - 1}
-                    break;
-                case 'right':
-                    newHead = {x: oldHead.x + 1, y: oldHead.y}
-                    break;
-                case 'bottom':
-                    newHead = {x: oldHead.x, y: oldHead.y + 1}
-                    break;
+            if (newHead.getState() !== PlaygroundModel.states.SNAKE) {
+                cells.push(newHead);
+                exTail.setState(PlaygroundModel.states.FREE);
+                newHead.setState(PlaygroundModel.states.SNAKE);
+            } else {
+                throw new Error('You ate yourself.');
             }
-
-            this.cells.push(newHead)
-            this.pg.setCell(prevTail, PlaygroundModel.states.FREE);
-            this.pg.setCell(newHead, PlaygroundModel.states.SNAKE);
         },
 
         turn: function (direction) {

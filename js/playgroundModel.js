@@ -7,48 +7,77 @@
         FROG: 'frog'
     };
 
-    var pg = window.PlaygroundModel = PlaygroundModel;
+    window.PlaygroundModel = PlaygroundModel;
 
     function PlaygroundModel(height, width) {
-        this.h = height;
-        this.w = width;
         this.listeners = [];
+
+        this.height = function () {
+            return height;
+        };
+
+        this.width = function () {
+            return width;
+        };
 
         this.init();
     }
 
+    function Cell(playground, x, y, state) {
+        this.pg = playground;
+        this.x = x;
+        this.y = y;
+
+        this.getState = function () {
+            return state;
+        };
+
+        this.setState = function (newState) {
+            state = newState;
+            this.pg.fireCellChanged(this);
+            return this;
+        }
+    }
+
+    Cell.prototype = {
+        left: function () {
+            return this.pg.cells[_normalise(this.x - 1, this.pg.width())][this.y];
+        },
+        right: function () {
+            return this.pg.cells[_normalise(this.x + 1, this.pg.width())][this.y];
+        },
+        top: function () {
+            return this.pg.cells[this.x][_normalise(this.y - 1, this.pg.height())];
+        },
+        bottom: function () {
+            return this.pg.cells[this.x][_normalise(this.y + 1, this.pg.height())];
+        }
+    };
+
+    function _normalise(coord, max) {
+        return (coord < 0) ? (max - 1) : ((coord >= max ) ? 0 : coord);
+    }
+
     PlaygroundModel.prototype = {
 
-        height: function () {
-            return this.h;
-        },
-
-        width: function () {
-            return this.w;
-        },
-
         init: function () {
-            this.cells = new Array(this.w);
-            for (var y = 0; y < this.w; y++) {
-                this.cells[y] = new Array(this.h);
+            var cells = this.cells = new Array(this.w),
+                pgModel = this;
+
+            for (var x = 0; x < this.width(); x++) {
+                cells[x] = new Array(this.height());
+                for (var y = 0; y < this.height(); y++) {
+                    cells[x][y] = new Cell(this, x, y, PlaygroundModel.states.FREE);
+                }
             }
         },
 
-        setCell: function (cell, state) {
-            if (cell.x < 0 || cell.y < 0 || cell.x >= this.w || cell.y >= this.h) {
-                throw new Error("Index out of bound exception (playground size: ${height}x${width}, cell: ${cell})."
-                        .replace('${height}', this.h)
-                        .replace('${width}', this.w)
-                        .replace('${cell}', JSON.stringify(cell))
-                );
-            }
+        fireCellChanged: function (cell) {
+            this.notifyListeners(cell);
+        },
 
-            this.cells[cell.x][cell.y] = state;
-            this.notifyListeners({
-                x: cell.x,
-                y: cell.y,
-                state: state
-            })
+        getCell: function (coord) {
+            return this.cells[coord.x][coord.y];
         },
 
         addListener: function (listener) {

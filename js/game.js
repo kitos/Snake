@@ -9,15 +9,15 @@
     }
 
     var pgModel = new PlaygroundModel(20, 40),
-        snake = new Snake(pgModel, 10),
-        pg = new Playground($('.js-playground'), pgModel);
+        pg = new Playground($('.js-playground'), pgModel),
+        snake = new Snake(pgModel, 9);
 
     (function start() {
         var intervalID = setInterval(function () {
             try {
                 snake.move();
             } catch (e) {
-                console.error('game over', e.message);
+                console.error('game over: ', e.message);
                 clearInterval(intervalID);
             }
         }, 200);
